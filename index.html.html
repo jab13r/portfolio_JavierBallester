@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javier Ballester | Portfolio Editorial & Digital</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Geist+Mono:wght@300;400;500&family=Cabinet+Grotesk:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --ink: #0c0a08;
+            --paper: #f5f0e8;
+            --cream: #ede8dd;
+            --warm-gray: #b8b0a0;
+            --accent: #c8381a;
+            --accent-light: #e85a3a;
+            --gold: #c9a84c;
+            --gold-light: #e8c870;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            background: var(--paper);
+            color: var(--ink);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 10px; height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+            mix-blend-mode: multiply;
+        }
+        .cursor-ring {
+            position: fixed;
+            width: 36px; height: 36px;
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.18s ease-out, width 0.2s, height 0.2s, opacity 0.2s;
+            opacity: 0.5;
+        }
+        .cursor.hover { width: 20px; height: 20px; }
+        .cursor-ring.hover { width: 56px; height: 56px; opacity: 0.3; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: var(--cream); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+        /* Selection */
+        ::selection { background: var(--accent); color: var(--paper); }
+
+        /* -------- NAVBAR -------- */
+        .navbar {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 0 3rem;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(245, 240, 232, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(12,10,8,0.08);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--ink);
+            background: none; border: none; cursor: none;
+        }
+        .nav-logo span { color: var(--accent); }
+
+        .nav-links { display: flex; align-items: center; gap: 2.5rem; }
+        .nav-link {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warm-gray);
+            background: none; border: none; cursor: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: var(--ink); }
+
+        .nav-cta {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            padding: 0.6rem 1.4rem;
+            cursor: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .nav-cta:hover { background: var(--accent); }
+
+        /* -------- HERO -------- */
+        .hero {
+            min-height: 100vh;
+            padding: 120px 3rem 80px;
+            display: flex; align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: 'JB';
+            position: absolute;
+            right: -0.05em; top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(220px, 30vw, 420px);
+            font-weight: 300;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(12,10,8,0.06);
+            pointer-events: none;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .hero-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 6rem;
+        }
+
+        .hero-text { flex: 1; position: relative; z-index: 2; }
+
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            margin-bottom: 2.5rem;
+        }
+        .hero-tag::before {
+            content: '';
+            display: block;
+            width: 2rem; height: 1px;
+            background: var(--accent);
+        }
+        .hero-tag span {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        h1.hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(4rem, 9vw, 9rem);
+            font-weight: 300;
+            line-height: 0.9;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+        }
+        h1.hero-title em {
+            font-style: italic;
+            color: var(--accent);
+        }
+
+        .hero-desc {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 1.7;
+            color: #6b6358;
+            max-width: 460px;
+            margin-bottom: 3rem;
+        }
+        .hero-desc strong { color: var(--ink); font-weight: 700; }
+
+        .hero-actions { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+
+        .btn-primary {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            padding: 1rem 2rem;
+            cursor: none;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: var(--accent); }
+
+        .btn-ghost {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid rgba(12,10,8,0.2);
+            padding: 1rem 2rem;
+            cursor: none;
+            text-decoration: none;
+            display: inline-block;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Profile image */
+        .hero-image-wrap {
+            width: 360px; flex-shrink: 0;
+            position: relative;
+        }
+        .hero-image-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border: 1px solid rgba(200, 56, 26, 0.2);
+            z-index: 0;
+            transition: inset 0.4s ease;
+        }
+        .hero-image-wrap:hover::before { inset: -20px; border-color: var(--accent); }
+
+        .hero-image-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; right: -20px;
+            width: 100px; height: 100px;
+            background: var(--accent);
+            opacity: 0.08;
+            z-index: 0;
+        }
+
+        .hero-image-wrap img {
+            width: 100%;
+            display: block;
+            position: relative;
+            z-index: 1;
+            filter: grayscale(8%);
+            transition: filter 0.4s;
+        }
+        .hero-image-wrap:hover img { filter: grayscale(0%); }
+
+        /* -------- SECTION HEADERS -------- */
+        .section-label {
+            display: inline-flex; align-items: center; gap: 1rem;
+            margin-bottom: 4rem;
+        }
+        .section-label span {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--warm-gray);
+        }
+        .section-label::after {
+            content: '';
+            display: block;
+            width: 60px; height: 1px;
+            background: var(--warm-gray);
+        }
+
+        h2.section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            letter-spacing: -0.01em;
+        }
+
+        /* -------- PORTFOLIO SECTION -------- */
+        .portfolio-section {
+            padding: 8rem 3rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .portfolio-section .section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 5rem;
+            border-bottom: 1px solid rgba(12,10,8,0.1);
+            padding-bottom: 2rem;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .project-card {
+            background: var(--cream);
+            padding: 2.5rem;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s;
+            border: none;
+            text-align: left;
+            width: 100%;
+        }
+        .project-card::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 3px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        .project-card:hover { background: var(--ink); }
+        .project-card:hover::before { transform: scaleX(1); }
+        .project-card:hover .card-name { color: var(--paper); }
+        .project-card:hover .card-role { color: var(--accent); }
+        .project-card:hover .card-desc { color: rgba(245,240,232,0.6); }
+        .project-card:hover .card-period { color: rgba(245,240,232,0.4); }
+        .project-card:hover .card-arrow { color: var(--paper); transform: translate(4px, -4px); }
+        .project-card:hover .card-img-wrap { border-color: rgba(255,255,255,0.08); }
+        .project-card:hover .card-img-placeholder { background: #1a1814; }
+
+        .card-img-wrap {
+            width: 80px; height: 80px;
+            border: 1px solid rgba(12,10,8,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.3s;
+        }
+        .card-img-wrap img {
+            width: 100%; height: 100%;
+            object-fit: contain;
+        }
+        .card-img-placeholder {
+            width: 100%; height: 100%;
+            background: var(--cream);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--warm-gray);
+            transition: background 0.3s;
+        }
+
+        .card-num {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--warm-gray);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .card-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 300;
+            line-height: 1;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .card-role {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        .card-desc {
+            font-size: 0.875rem;
+            color: var(--warm-gray);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            transition: color 0.3s;
+        }
+
+        .card-period {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.58rem;
+            color: rgba(12,10,8,0.3);
+            letter-spacing: 0.08em;
+            transition: color 0.3s;
+        }
+
+        .card-arrow {
+            position: absolute;
+            top: 2.5rem; right: 2.5rem;
+            font-size: 1.2rem;
+            color: var(--warm-gray);
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        /* -------- DETAIL PAGE -------- */
+        .detail-wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 120px 3rem 80px;
+        }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warm-gray);
+            background: none; border: none;
+            cursor: none;
+            margin-bottom: 5rem;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: var(--accent); }
+        .back-btn::before {
+            content: '←';
+            font-size: 0.8rem;
+            transition: transform 0.2s;
+        }
+        .back-btn:hover::before { transform: translateX(-4px); }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8rem;
+            align-items: start;
+        }
+
+        .detail-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 6vw, 6rem);
+            font-weight: 300;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-period-pill {
+            display: inline-flex;
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: var(--cream);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .detail-desc {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-style: italic;
+            font-weight: 300;
+            color: #6b6358;
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--accent);
+        }
+
+        .detail-link {
+            display: inline-flex; align-items: center; gap: 0.6rem;
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--paper);
+            padding: 0.9rem 1.8rem;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .detail-link:hover { background: var(--accent); }
+
+        .achievements-label {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm-gray);
+            margin-bottom: 2.5rem;
+        }
+
+        .achievement-list { list-style: none; }
+        .achievement-item {
+            padding: 1.5rem 0;
+            border-top: 1px solid rgba(12,10,8,0.1);
+            display: flex; align-items: flex-start; gap: 1rem;
+            transition: padding-left 0.3s;
+        }
+        .achievement-item::before {
+            content: '—';
+            color: var(--accent);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+        .achievement-item:hover { padding-left: 0.5rem; }
+        .achievement-item p {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.4;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        /* -------- CONTACT PAGE -------- */
+        .contact-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 160px 3rem 80px;
+        }
+
+        .contact-eyebrow {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex; align-items: center; gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .contact-eyebrow::before {
+            content: '';
+            display: block;
+            width: 2rem; height: 1px;
+            background: var(--accent);
+        }
+
+        .contact-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(4rem, 10vw, 9rem);
+            font-weight: 300;
+            line-height: 0.9;
+            letter-spacing: -0.03em;
+            margin-bottom: 5rem;
+        }
+        .contact-title em { font-style: italic; color: var(--accent); }
+
+        .contact-block {
+            border-top: 1px solid rgba(12,10,8,0.1);
+            padding: 2.5rem 0;
+        }
+        .contact-block:last-child { border-bottom: 1px solid rgba(12,10,8,0.1); }
+
+        .contact-label {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm-gray);
+            margin-bottom: 0.8rem;
+        }
+        .contact-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--ink);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: block;
+        }
+        .contact-value:hover { color: var(--accent); }
+
+        /* -------- FOOTER -------- */
+        footer {
+            padding: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid rgba(12,10,8,0.08);
+        }
+        footer p {
+            font-family: 'Geist Mono', monospace;
+            font-size: 0.55rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(12,10,8,0.25);
+        }
+
+        /* -------- ANIMATIONS -------- */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(28px);
+            animation: fadeUp 0.7s ease-out forwards;
+        }
+        .fade-up:nth-child(2) { animation-delay: 0.1s; }
+        .fade-up:nth-child(3) { animation-delay: 0.2s; }
+        .fade-up:nth-child(4) { animation-delay: 0.3s; }
+        .fade-up:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* -------- RESPONSIVE -------- */
+        @media (max-width: 900px) {
+            .navbar { padding: 0 1.5rem; }
+            .hero { padding: 100px 1.5rem 60px; }
+            .hero-inner { flex-direction: column; gap: 3rem; }
+            .hero-image-wrap { width: 260px; }
+            .portfolio-section { padding: 5rem 1.5rem; }
+            .project-grid { grid-template-columns: 1fr; gap: 2px; }
+            .detail-grid { grid-template-columns: 1fr; gap: 4rem; }
+            .detail-wrap { padding: 100px 1.5rem 60px; }
+            .contact-wrap { padding: 120px 1.5rem 60px; }
+            footer { padding: 2rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        /* Image error fallback */
+        .img-fallback {
+            width: 100%; height: 100%;
+            background: var(--cream);
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom cursor -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <div id="root"></div>
+
+    <script>
+        // Cursor
+        const cursor = document.getElementById('cursor');
+        const ring = document.getElementById('cursorRing');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            ring.style.left = e.clientX + 'px';
+            ring.style.top = e.clientY + 'px';
+        });
+        document.addEventListener('mouseover', e => {
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+                cursor.classList.add('hover');
+                ring.classList.add('hover');
+            }
+        });
+        document.addEventListener('mouseout', e => {
+            if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+                cursor.classList.remove('hover');
+                ring.classList.remove('hover');
+            }
+        });
+    </script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const images = {
+            profile: "https://i.postimg.cc/R04j1xRd/Whats-App-Image-2026-03-24-at-13-06-13.jpg",
+            dg_logo: "https://i.postimg.cc/KYTRTL0P/Whats-App-Image-2026-03-24-at-17-33-06.jpg",
+            wn_gems: "https://i.postimg.cc/7YzcpZt9/unnamed.jpg",
+            hm_logo: "https://i.postimg.cc/02Lvw4Fz/unnamed-(1).jpg"
+        };
+
+        const mediaData = [
+            {
+                id: 'doubleg',
+                name: 'Double G',
+                image: images.dg_logo,
+                role: 'Redactor & Content Creator',
+                period: '2023 — Actualidad',
+                description: 'Especialista en gestión de contenidos culturales. Fusión entre periodismo y producción multimedia.',
+                projects: [
+                    'Gestión de contenidos periodísticos especializados.',
+                    'Cobertura integral de eventos culturales.',
+                    'Entrevistas exclusivas con artistas del sector.'
+                ]
+            },
+            {
+                id: 'whynotgems',
+                name: 'WhyNotGems',
+                image: images.wn_gems,
+                role: 'CM & Customer Experience',
+                period: '2023 — 2025',
+                url: 'https://whynotgems.com/es/xipblog.html?page=2',
+                description: 'Liderazgo digital y operativo para firma de joyería premium.',
+                projects: [
+                    'Social Media Strategy & Analytics.',
+                    'Redacción especializada (XipBlog) con enfoque SEO.',
+                    'Customer Success y gestión de e-commerce.'
+                ]
+            },
+            {
+                id: 'hoymagazine',
+                name: 'Hoy Magazine',
+                image: images.hm_logo,
+                role: 'Redactor Cultural',
+                period: '2021 — 2023',
+                url: 'https://www.hoymagazine.es/author/javier-ballester-luque/',
+                description: 'Redacción de reportajes y críticas culturales en cabecera digital de referencia.',
+                projects: [
+                    'Entrevistas de impacto sobre procesos creativos.',
+                    'Especiales editoriales de investigación cultural.',
+                    'Optimización SEO para noticias de actualidad.'
+                ]
+            }
+        ];
+
+        const ImgWithFallback = ({ src, alt, className, initial }) => {
+            const [err, setErr] = useState(false);
+            if (err || !src) return (
+                <div className="img-fallback">
+                    <span style={{fontFamily:'Cormorant Garamond,serif', fontSize:'1.5rem', color:'#b8b0a0', fontWeight:300}}>{initial || '?'}</span>
+                </div>
+            );
+            return <img src={src} alt={alt} className={className} onError={() => setErr(true)} />;
+        };
+
+        const Navbar = ({ onNav }) => (
+            <nav className="navbar">
+                <button className="nav-logo" onClick={() => onNav('home')}>
+                    Javier <span>Ballester</span>
+                </button>
+                <div className="nav-links">
+                    <button className="nav-link" onClick={() => onNav('home')}>Inicio</button>
+                    <button className="nav-cta" onClick={() => onNav('contact')}>Contacto</button>
+                </div>
+            </nav>
+        );
+
+        const HomePage = ({ onNav, onMedia }) => (
+            <>
+                <section className="hero">
+                    <div className="hero-inner">
+                        <div className="hero-text">
+                            <div className="hero-tag fade-up"><span>Comunicación & Contenidos</span></div>
+                            <h1 className="hero-title fade-up">
+                                Javier<br/><em>Ballester.</em>
+                            </h1>
+                            <p className="hero-desc fade-up">
+                                Periodista. Creador de contenidos.<br/>
+                                <strong>Estrategia digital</strong> con rigor periodístico.<br/>
+                                <span style={{fontSize:'0.85rem', color:'#b8b0a0'}}>Grado en Periodismo (UCM) · Máster en Periodismo Cultural (URJC)</span>
+                            </p>
+                            <div className="hero-actions fade-up">
+                                <button className="btn-primary" onClick={() => onNav('contact')}>Hablemos</button>
+                                <a className="btn-ghost" href="https://promptcritico.blogspot.com/" target="_blank">Mi Blog IA ↗</a>
+                            </div>
+                        </div>
+                        <div className="hero-image-wrap fade-up">
+                            <ImgWithFallback src={images.profile} alt="Javier Ballester" initial="JB" />
+                        </div>
+                    </div>
+                </section>
+
+                <div className="portfolio-section">
+                    <div className="section-header">
+                        <div>
+                            <div className="section-label"><span>Portafolio</span></div>
+                            <h2 className="section-title" style={{fontSize:'clamp(2rem,4vw,3.5rem)', fontWeight:300}}>
+                                Medios & Proyectos
+                            </h2>
+                        </div>
+                        <p style={{fontFamily:'Geist Mono,monospace', fontSize:'0.6rem', letterSpacing:'0.1em', color:'#b8b0a0', textTransform:'uppercase', textAlign:'right', lineHeight:1.8}}>
+                            {mediaData.length} proyectos<br/>seleccionados
+                        </p>
+                    </div>
+
+                    <div className="project-grid">
+                        {mediaData.map((m, i) => (
+                            <button key={m.id} className="project-card" onClick={() => { onMedia(m); onNav('detail'); window.scrollTo(0,0); }}>
+                                <span className="card-arrow">↗</span>
+                                <div className="card-img-wrap">
+                                    <ImgWithFallback src={m.image} alt={m.name} initial={m.name[0]} />
+                                </div>
+                                <div className="card-num">{String(i+1).padStart(2,'0')}</div>
+                                <div className="card-name">{m.name}</div>
+                                <div className="card-role">{m.role}</div>
+                                <div className="card-desc">{m.description}</div>
+                                <div className="card-period">{m.period}</div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </>
+        );
+
+        const DetailPage = ({ media, onNav }) => {
+            if (!media) return null;
+            return (
+                <div className="detail-wrap">
+                    <button className="back-btn" onClick={() => onNav('home')}>Volver</button>
+                    <div className="detail-grid">
+                        <div className="fade-up">
+                            <h1 className="detail-title">{media.name}</h1>
+                            <div className="detail-period-pill">{media.period}</div>
+                            <p className="detail-desc">{media.description}</p>
+                            {media.url && (
+                                <a className="detail-link" href={media.url} target="_blank">
+                                    Ver Publicaciones <span>↗</span>
+                                </a>
+                            )}
+                        </div>
+                        <div className="fade-up">
+                            <div className="achievements-label">Trayectoria</div>
+                            <ul className="achievement-list">
+                                {media.projects.map((p, i) => (
+                                    <li key={i} className="achievement-item"><p>{p}</p></li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ContactPage = () => (
+            <div className="contact-wrap">
+                <div className="contact-eyebrow fade-up">Disponible para proyectos</div>
+                <h1 className="contact-title fade-up">
+                    Información<br/><em>de contacto.</em>
+                </h1>
+                <div className="contact-block fade-up">
+                    <div className="contact-label">Email</div>
+                    <a href="mailto:javier.ballester52@gmail.com" className="contact-value">
+                        javier.ballester52@gmail.com
+                    </a>
+                </div>
+                <div className="contact-block fade-up">
+                    <div className="contact-label">Teléfono</div>
+                    <span className="contact-value">+34 642 51 82 39</span>
+                </div>
+                <div className="contact-block fade-up">
+                    <div className="contact-label">Ubicación</div>
+                    <span className="contact-value">Madrid, España</span>
+                </div>
+            </div>
+        );
+
+        const App = () => {
+            const [page, setPage] = useState('home');
+            const [media, setMedia] = useState(null);
+
+            return (
+                <div style={{minHeight:'100vh'}}>
+                    <Navbar onNav={setPage} />
+                    <main>
+                        {page === 'home' && <HomePage onNav={setPage} onMedia={setMedia} />}
+                        {page === 'detail' && <DetailPage media={media} onNav={setPage} />}
+                        {page === 'contact' && <ContactPage />}
+                    </main>
+                    <footer>
+                        <p>Javier Ballester — Portfolio 2026</p>
+                        <p>Periodismo · Contenidos · Estrategia Digital</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
